@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HACKBUDDY_SENTINEL | SCAN_ENGINE</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#081423",
+                        "on-surface": "#d7e3f9",
+                        "primary-fixed-dim": "#38debb",
+                        "error": "#ffb4ab",
+                        "warning": "#dec65a",
+                        "surface-container": "#152030",
+                        "surface-container-low": "#111c2c",
+                        "surface-container-high": "#1f2b3b",
+                        "outline-variant": "#3c4a45",
+                        "on-surface-variant": "#bacac3",
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk"],
+                        body: ["Inter"],
+                        mono: ["Roboto Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #081423; color: #d7e3f9; font-family: 'Inter', sans-serif; min-height: max(884px, 100dvh); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-x-hidden">
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col py-8 h-screen w-64 fixed left-0 border-r border-[#3c4a45]/15 bg-[#081423]/70 backdrop-blur-xl z-50">
+        <div class="px-6 mb-12">
+            <h2 class="text-[#38debb] font-bold font-headline tracking-widest uppercase">CORE_COMMAND</h2>
+        </div>
+        <nav class="flex-1 space-y-2">
+            <a class="flex items-center px-6 py-3 text-[#38debb] border-r-2 border-[#38debb] bg-[#38debb]/5 font-bold font-mono text-xs" href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="radar">radar</span> SCAN_ENGINE
+            </a>
+            <a class="flex items-center px-6 py-3 text-[#bacac3]/60 hover:text-white font-mono text-xs" href="/"><span class="material-symbols-outlined mr-4">home</span> HOME</a>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col md:ml-64 pb-20 md:pb-0">
+        <!-- Top App Bar -->
+        <header class="w-full top-0 sticky z-40 bg-[#081423] shadow-lg shadow-black/50 border-b border-[#3c4a45]/15">
+            <div class="flex justify-between items-center w-full px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[#38debb]">security</span>
+                    <h1 class="text-xl font-black text-[#38debb] tracking-widest font-headline">HACKBUDDY_SENTINEL</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="p-6 md:p-8 space-y-8">
+            <section class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span id="status-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#38debb]/10 text-[#38debb] text-[10px] font-bold font-mono">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#38debb] animate-pulse"></span> ACTIVE_SCAN
+                        </span>
+                    </div>
+                    <h2 class="text-3xl font-bold font-headline tracking-tight text-on-surface" id="target-display">
+                        {{ target_url if target_url else 'https://example-app.com' }}
+                    </h2>
+                </div>
+                <!-- Progress -->
+                <div class="w-full lg:w-96 flex flex-col gap-4">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-xs font-mono text-[#38debb] font-bold" id="status-text">INITIALIZING...</span>
+                        <span id="progress-text" class="text-2xl font-bold font-headline text-[#38debb]">0%</span>
+                    </div>
+                    <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-[#00725e] to-[#38debb] rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <a id="btn-pdf" href="/api/report/pdf" target="_blank" style="display: none;" class="flex-1 flex items-center justify-center gap-2 bg-[#38debb] text-[#081423] hover:opacity-90 py-2 text-xs font-bold font-mono transition-colors rounded-sm">
+                            <span class="material-symbols-outlined text-sm">picture_as_pdf</span> DOWNLOAD REPORT
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-surface-container-low p-5 border-l-4 border-error relative">
+                    <div class="text-[10px] font-bold font-mono text-error uppercase">Critical_Threats</div>
+                    <div id="count-critical" class="text-4xl font-black font-headline text-on-surface">0</div>
+                </div>
+                <div class="bg-surface-container-low p-5 border-l-4 border-[#dec65a] relative">
+                    <div class="text-[10px] font-bold font-mono text-[#dec65a] uppercase">High_Risk</div>
+                    <div id="count-high" class="text-4xl font-black font-headline text-on-surface">0</div>
+                </div>
+                <div class="bg-surface-container-low p-5 border-l-4 border-[#38debb] relative">
+                    <div class="text-[10px] font-bold font-mono text-[#38debb] uppercase">Medium_Risk</div>
+                    <div id="count-medium" class="text-4xl font-black font-headline text-on-surface">0</div>
+                </div>
+                <div class="bg-surface-container-low p-5 border-l-4 border-on-surface-variant relative">
+                    <div class="text-[10px] font-bold font-mono text-on-surface-variant uppercase">Low_Impact/Info</div>
+                    <div id="count-low" class="text-4xl font-black font-headline text-on-surface">0</div>
+                </div>
+            </div>
+
+            <!-- Findings & Console -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div class="xl:col-span-2 space-y-6">
+                    <div class="flex items-center justify-between border-b border-outline-variant/10 pb-4">
+                        <h3 class="text-lg font-bold font-headline flex items-center gap-2">DETAILED_FINDINGS</h3>
+                        <span id="count-total" class="text-[10px] px-2 py-0.5 bg-surface-container text-[#38debb] font-mono">0 TOTAL</span>
+                    </div>
+                    <div id="findings-container" class="space-y-4">
+                        <div class="p-6 text-on-surface-variant font-mono text-sm opacity-50">Waiting for intelligence data...</div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-1 space-y-4">
+                    <div class="flex items-center justify-between border-b border-outline-variant/10 pb-4">
+                        <h3 class="text-lg font-bold font-headline flex items-center gap-2">LIVE_CONSOLE <span class="inline-block w-2 h-2 bg-[#38debb] rounded-full animate-pulse"></span></h3>
+                    </div>
+                    <div class="bg-[#040f1e] border border-outline-variant/10 h-[600px] flex flex-col">
+                        <div id="live-console" class="p-4 flex-1 font-mono text-[11px] leading-relaxed overflow-y-auto space-y-2 text-on-surface-variant">
+                            <div><span class="text-[#38debb]">[SYSTEM]</span> Initializing modules...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Frontend JS logic connecting to backend -->
+    <script>
+        const targetUrl = "{{ target_url if target_url else '' }}";
+        const findingsContainer = document.getElementById("findings-container");
+        const consoleEl = document.getElementById("live-console");
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const statusText = document.getElementById("status-text");
+        const statusBadge = document.getElementById("status-badge");
+        const btnPdf = document.getElementById("btn-pdf");
+
+        // UI update counts
+        const cCrit = document.getElementById("count-critical");
+        const cHigh = document.getElementById("count-high");
+        const cMed = document.getElementById("count-medium");
+        const cLow = document.getElementById("count-low");
+        const cTotal = document.getElementById("count-total");
+
+        let previousFindingsCount = 0;
+
+        function logConsole(msg, type="INFO") {
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
+            const div = document.createElement("div");
+            let textClass = "text-on-surface-variant";
+            if(type === "CRIT") textClass = "text-error font-bold";
+            if(type === "WARN") textClass = "text-[#dec65a]";
+
+            div.className = textClass;
+            div.innerHTML = `<span class="text-[#38debb]">[${time}]</span> [${type}] ${msg}`;
+            consoleEl.appendChild(div);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function createFindingCard(finding) {
+            const styleMap = {
+                "Critical": { bg: "bg-error", text: "text-on-error" },
+                "High": { bg: "bg-[#dec65a]", text: "text-[#393000]" },
+                "Medium": { bg: "bg-[#38debb]", text: "text-[#002019]" },
+                "Low": { bg: "bg-surface-variant", text: "text-on-surface" },
+                "Info": { bg: "bg-surface-variant", text: "text-on-surface" }
+            };
+
+            const s = styleMap[finding.severity] || styleMap["Info"];
+
+            return `
+            <div class="bg-[#040f1e] border border-outline-variant/10 p-6 flex flex-col md:flex-row gap-6 transition-all hover:border-[#38debb]/30 group rounded-sm">
+                <div class="flex-1 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="${s.bg} ${s.text} text-[10px] font-black px-2 py-0.5 uppercase font-mono tracking-tighter">${finding.severity}</span>
+                        <h4 class="text-lg font-bold font-headline text-on-surface">${finding.vuln_type}</h4>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs font-mono text-on-surface-variant bg-surface-container px-3 py-1.5 w-fit rounded-sm break-all">
+                        <span class="material-symbols-outlined text-xs">link</span>
+                        ${finding.path}
+                    </div>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                        ${finding.description}
+                    </p>
+                    <p class="text-[11px] font-mono text-[#38debb] pt-2 border-t border-outline-variant/10">
+                        Remediation: ${finding.remediation}
+                    </p>
+                </div>
+            </div>`;
+        }
+
+        async function pollResults() {
+            if(!targetUrl) return;
+
+            try {
+                const urlQuery = encodeURIComponent(targetUrl);
+                const res = await fetch("/api/results?url=" + urlQuery);
+                const data = await res.json();
+
+                if(!data || data.error) return;
+
+                // Update Progress
+                const p = data.progress || 0;
+                progressBar.style.width = p + "%";
+                progressText.innerText = p + "%";
+
+                if (data.status === "running") {
+                    statusText.innerText = "SCAN_IN_PROGRESS";
+                } else if (data.status === "completed") {
+                    statusText.innerText = "SCAN_COMPLETE";
+                    statusBadge.innerHTML = "SCAN_COMPLETE";
+                    statusBadge.className = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-surface-container text-on-surface-variant text-[10px] font-bold font-mono";
+                    btnPdf.style.display = "flex"; // Show PDF button
+                } else if (data.status === "error") {
+                    statusText.innerText = "SCAN_ERROR";
+                }
+
+                // Update Findings
+                const findings = data.findings || [];
+                if(findings.length > previousFindingsCount) {
+                    if (previousFindingsCount === 0) findingsContainer.innerHTML = ''; // clear waiting
+                    
+                    for(let i = previousFindingsCount; i < findings.length; i++) {
+                        const f = findings[i];
+                        findingsContainer.innerHTML += createFindingCard(f);
+                        
+                        let msgType = "INFO";
+                        if(f.severity === "Critical") msgType = "CRIT";
+                        if(f.severity === "High") msgType = "WARN";
+                        logConsole(`Found ${f.severity} issue: ${f.vuln_type} at ${f.path}`, msgType);
+                    }
+                    previousFindingsCount = findings.length;
+
+                    // Update Counters
+                    let cr=0, hi=0, md=0, lo=0;
+                    findings.forEach(f => {
+                        if(f.severity === "Critical") cr++;
+                        else if(f.severity === "High") hi++;
+                        else if(f.severity === "Medium") md++;
+                        else lo++;
+                    });
+                    
+                    cCrit.innerText = cr;
+                    cHigh.innerText = hi;
+                    cMed.innerText = md;
+                    cLow.innerText = lo;
+                    cTotal.innerText = findings.length + " TOTAL";
+                }
+
+                if (data.status === "completed" || data.status === "error") {
+                    clearInterval(pollInterval);
+                    logConsole("Engine shutdown. Scan finalizing phase complete.");
+                }
+
+            } catch (err) {
+                console.error("Poll error:", err);
+            }
+        }
+
+        logConsole("Target locked: " + targetUrl);
+        const pollInterval = setInterval(pollResults, 2000);
+        pollResults(); // Initial fetch
+    </script>
+</body>
+</html>

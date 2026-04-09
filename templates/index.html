@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HackBuddy | Automated Vulnerability Scanner</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=Roboto+Mono&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#081423",
+                        "surface-container-highest": "#2a3546",
+                        "surface-bright": "#2f3a4b",
+                        "on-tertiary-fixed-variant": "#534600",
+                        "outline": "#85948e",
+                        "on-tertiary-fixed": "#211b00",
+                        "primary-fixed-dim": "#38debb",
+                        "inverse-on-surface": "#263141",
+                        "tertiary-container": "#fbe273",
+                        "secondary-container": "#3c4962",
+                        "secondary": "#b9c7e4",
+                        "surface-variant": "#2a3546",
+                        "on-surface-variant": "#bacac3",
+                        "secondary-fixed": "#d6e3ff",
+                        "primary-fixed": "#5ffbd6",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#002019",
+                        "surface-container-high": "#1f2b3b",
+                        "surface-container-low": "#111c2c",
+                        "on-secondary-container": "#abb9d6",
+                        "background": "#081423",
+                        "on-primary-fixed-variant": "#005142",
+                        "on-error": "#690005",
+                        "on-surface": "#d7e3f9",
+                        "error": "#ffb4ab",
+                        "on-primary": "#00382d",
+                        "surface-dim": "#081423",
+                        "on-secondary-fixed-variant": "#39475f",
+                        "tertiary": "#ffffff",
+                        "error-container": "#93000a",
+                        "primary": "#ffffff",
+                        "primary-container": "#5ffbd6",
+                        "surface-tint": "#38debb",
+                        "surface-container-lowest": "#040f1e",
+                        "tertiary-fixed-dim": "#dec65a",
+                        "secondary-fixed-dim": "#b9c7e4",
+                        "inverse-surface": "#d7e3f9",
+                        "outline-variant": "#3c4a45",
+                        "on-primary-container": "#00725e",
+                        "on-tertiary-container": "#756400",
+                        "on-secondary-fixed": "#0d1c32",
+                        "surface-container": "#152030",
+                        "inverse-primary": "#006b58",
+                        "on-secondary": "#233148",
+                        "on-tertiary": "#393000",
+                        "tertiary-fixed": "#fbe273",
+                        "on-background": "#d7e3f9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 28, 44, 0.7);
+            backdrop-filter: blur(20px);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glow-soft {
+            box-shadow: 0 0 48px rgba(56, 222, 187, 0.05);
+        }
+
+        .tech-gradient {
+            background: linear-gradient(135deg, #38debb 0%, #00725e 100%);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed-dim selection:text-on-primary-fixed">
+    <!-- TopAppBar Shell -->
+    <nav class="fixed top-0 w-full z-50 bg-[#081423]/70 backdrop-blur-md shadow-[0_0_20px_rgba(56,222,187,0.05)]">
+        <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#64ffda]" data-icon="security">security</span>
+                <span class="text-xl font-bold tracking-tighter text-[#64ffda] font-headline">HackBuddy</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a class="text-[#64ffda] transition-colors duration-300" href="#about">About</a>
+                <a class="text-[#bacac3] hover:text-[#64ffda] transition-colors duration-300"
+                    href="#features">Features</a>
+                <a class="text-[#bacac3] hover:text-[#64ffda] transition-colors duration-300"
+                    href="#workflow">Workflow</a>
+                <a class="text-[#bacac3] hover:text-[#64ffda] transition-colors duration-300" href="#stack">Stack</a>
+            </div>
+
+        </div>
+        <div class="bg-gradient-to-b from-[#111c2c] to-transparent h-px"></div>
+    </nav>
+    <main class="pt-24">
+        <!-- Hero Section -->
+        <section class="relative px-6 py-20 md:py-32 overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-fixed-dim/5 blur-[100px] rounded-full"></div>
+            </div>
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex flex-col items-start max-w-4xl">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-highest/30 border border-outline-variant/10 rounded-sm mb-6">
+                        <span class="flex h-2 w-2 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+                        <span
+                            class="text-[10px] uppercase tracking-widest font-bold text-primary-fixed-dim font-['Roboto_Mono']">v1.2.0
+                            Stable Build</span>
+                    </div>
+                    <h1
+                        class="font-headline text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]">
+                        HackBuddy – Automated <span class="text-primary-fixed-dim">Vulnerability Scanner</span> &amp;
+                        Pentesting Tool
+                    </h1>
+                    <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
+                        Secure your web applications with intelligent scanning and actionable insights. A
+                        high-performance sentinel designed for modern security teams.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xl" id="hero-input">
+                        <form id="scan-form" class="flex w-full gap-2" action="/result" method="GET">
+                            <input type="url" name="url" required placeholder="https://target-app.com"
+                                class="flex-1 bg-surface-container-low/80 border border-outline-variant/30 text-white px-6 py-4 rounded-sm focus:ring-1 focus:ring-primary-fixed-dim focus:border-primary-fixed-dim focus:outline-none placeholder:text-on-surface-variant/50 font-['Roboto_Mono']" />
+                            <button type="submit"
+                                class="inline-block tech-gradient text-on-primary-fixed px-8 py-4 font-bold rounded-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all whitespace-nowrap">
+                                <span class="material-symbols-outlined text-sm" data-icon="radar">radar</span>
+                                Scan Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- About / Terminal Section -->
+        <section class="bg-surface-container-low py-24 px-6" id="about">
+            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                <div class="space-y-6">
+                    <span class="text-primary-fixed-dim font-['Roboto_Mono'] text-sm tracking-widest uppercase">THE
+                        MISSION</span>
+                    <h2 class="text-4xl font-headline font-bold text-white leading-tight">Automating reconnaissance and
+                        vulnerability detection</h2>
+                    <p class="text-on-surface-variant text-lg leading-relaxed">
+                        HackBuddy bridges the gap between manual penetration testing and traditional automated tools. By
+                        leveraging modular architecture and intelligent heuristics, it identifies critical attack
+                        vectors before they can be exploited.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6 pt-6">
+                        <div class="border-l-2 border-primary-fixed-dim/30 pl-4">
+                            <h4 class="text-white font-bold text-2xl">99.9%</h4>
+                            <p class="text-on-surface-variant text-sm">Detection Accuracy</p>
+                        </div>
+                        <div class="border-l-2 border-primary-fixed-dim/30 pl-4">
+                            <h4 class="text-white font-bold text-2xl">10ms</h4>
+                            <p class="text-on-surface-variant text-sm">Response Latency</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-lowest rounded-sm p-1 shadow-2xl border border-outline-variant/10">
+                    <div class="bg-surface-container-high px-4 py-2 flex items-center gap-2">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-error/40"></div>
+                            <div class="w-3 h-3 rounded-full bg-tertiary-container/40"></div>
+                            <div class="w-3 h-3 rounded-full bg-primary-fixed-dim/40"></div>
+                        </div>
+                        <div
+                            class="mx-auto text-[10px] font-['Roboto_Mono'] text-on-surface-variant opacity-50 uppercase tracking-widest">
+                            hackbuddy_main_v1.py</div>
+                    </div>
+                    <div class="p-6 font-['Roboto_Mono'] text-sm space-y-2 overflow-hidden">
+                        <p class="text-primary-fixed-dim">$ hackbuddy --target https://secure-app.com --scan-all</p>
+                        <p class="text-on-surface-variant opacity-70">[INFO] Initializing Modular Reconnaissance...</p>
+                        <p class="text-on-surface-variant opacity-70">[INFO] Enumerating Subdomains...</p>
+                        <p class="text-[#fbe273]">[WARN] Found 3 exposed HTTP headers</p>
+                        <p class="text-primary-fixed-dim">[SCAN] Checking OWASP Top 10 vectors</p>
+                        <p class="text-error">[CRIT] SQL Injection vulnerability detected at /api/v1/user</p>
+                        <p class="text-on-surface-variant animate-pulse cursor-default">_</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Features Bento Grid -->
+        <section class="py-24 px-6 bg-surface" id="features">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                    <div class="max-w-2xl">
+                        <span
+                            class="text-primary-fixed-dim font-['Roboto_Mono'] text-sm tracking-widest uppercase">CAPABILITIES</span>
+                        <h2 class="text-4xl font-headline font-bold text-white mt-4">Powerful Modular Defense</h2>
+                    </div>
+                    <p class="text-on-surface-variant font-['Roboto_Mono'] text-sm uppercase">Secure by Architecture</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div
+                        class="bg-surface-container hover:bg-surface-container-high p-8 transition-all border border-outline-variant/5 group">
+                        <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-6 block"
+                            data-icon="policy">policy</span>
+                        <h3 class="text-xl font-bold text-white mb-3">OWASP Top 10</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Comprehensive testing against
+                            Injection, Broken Authentication, and Sensitive Data Exposure.</p>
+                    </div>
+                    <!-- Card 2 -->
+                    <div
+                        class="bg-surface-container-low hover:bg-surface-container-high p-8 transition-all border border-outline-variant/5 group md:row-span-2">
+                        <div class="h-full flex flex-col">
+                            <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-6 block"
+                                data-icon="summarize">summarize</span>
+                            <h3 class="text-xl font-bold text-white mb-3">Automated Reporting</h3>
+                            <p class="text-on-surface-variant text-sm leading-relaxed mb-8">Generate professional-grade
+                                security audits in PDF/JSON format instantly after every scan session.</p>
+                            <div
+                                class="mt-auto bg-surface-container-lowest rounded p-4 border border-outline-variant/10">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[10px] text-on-surface-variant">VULNERABILITY_INDEX</span>
+                                    <span class="text-error text-xs font-bold">9.2</span>
+                                </div>
+                                <div class="w-full bg-surface-container-highest h-1">
+                                    <div class="bg-error w-[92%] h-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div
+                        class="bg-surface-container hover:bg-surface-container-high p-8 transition-all border border-outline-variant/5 group">
+                        <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-6 block"
+                            data-icon="folder_open">folder_open</span>
+                        <h3 class="text-xl font-bold text-white mb-3">Directory Brute Forcing</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">High-speed fuzzing of hidden
+                            directories using custom or standard wordlists.</p>
+                    </div>
+                    <!-- Card 4 -->
+                    <div
+                        class="bg-surface-container-low hover:bg-surface-container-high p-8 transition-all border border-outline-variant/5 group">
+                        <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-6 block"
+                            data-icon="lan">lan</span>
+                        <h3 class="text-xl font-bold text-white mb-3">Subdomain Enumeration</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Map the entire attack surface of your
+                            domain using passive and active discovery.</p>
+                    </div>
+                    <!-- Card 5 -->
+                    <div
+                        class="bg-surface-container hover:bg-surface-container-high p-8 transition-all border border-outline-variant/5 group">
+                        <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-6 block"
+                            data-icon="http">http</span>
+                        <h3 class="text-xl font-bold text-white mb-3">HTTP Header Analysis</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">Deep inspection of CSP, HSTS, and
+                            X-Frame-Options for misconfigurations.</p>
+                    </div>
+                    <!-- Card 6 -->
+                    <div
+                        class="bg-surface-container-low hover:bg-surface-container-high p-8 transition-all border border-outline-variant/5 group md:col-span-2">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="flex-1">
+                                <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-6 block"
+                                    data-icon="widgets">widgets</span>
+                                <h3 class="text-xl font-bold text-white mb-3">Modular Architecture</h3>
+                                <p class="text-on-surface-variant text-sm leading-relaxed">Extend functionality with
+                                    custom Python plugins. Build your own scanner modules in minutes.</p>
+                            </div>
+                            <div class="flex-shrink-0 grid grid-cols-2 gap-2">
+                                <div
+                                    class="w-12 h-12 bg-primary-fixed-dim/20 rounded-sm flex items-center justify-center text-primary-fixed-dim font-bold">
+                                    P1</div>
+                                <div
+                                    class="w-12 h-12 bg-primary-fixed-dim/20 rounded-sm flex items-center justify-center text-primary-fixed-dim font-bold">
+                                    P2</div>
+                                <div
+                                    class="w-12 h-12 bg-primary-fixed-dim/20 rounded-sm flex items-center justify-center text-primary-fixed-dim font-bold">
+                                    P3</div>
+                                <div
+                                    class="w-12 h-12 bg-outline-variant/20 rounded-sm flex items-center justify-center text-outline-variant font-bold">
+                                    +</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- How It Works -->
+        <section class="py-24 px-6 bg-surface-container-low relative" id="workflow">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="text-4xl font-headline font-bold text-white">Seamless Scanning Workflow</h2>
+                    <p class="text-on-surface-variant mt-4 max-w-xl mx-auto">From target identification to comprehensive
+                        reporting in four automated steps.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                    <!-- Connecting Line -->
+                    <div
+                        class="hidden md:block absolute top-12 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary-fixed-dim/30 to-transparent z-0">
+                    </div>
+                    <!-- Step 1 -->
+                    <div class="relative z-10 text-center flex flex-col items-center">
+                        <div
+                            class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center border border-primary-fixed-dim/20 mb-6 glow-soft group hover:border-primary-fixed-dim transition-colors">
+                            <span class="material-symbols-outlined text-3xl text-primary-fixed-dim"
+                                data-icon="input">input</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">1. Input URL</h4>
+                        <p class="text-on-surface-variant text-xs">Define your target web application and scope.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="relative z-10 text-center flex flex-col items-center">
+                        <div
+                            class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center border border-primary-fixed-dim/20 mb-6 glow-soft group hover:border-primary-fixed-dim transition-colors">
+                            <span class="material-symbols-outlined text-3xl text-primary-fixed-dim"
+                                data-icon="search_check">search_check</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">2. Scan</h4>
+                        <p class="text-on-surface-variant text-xs">HackBuddy initiates high-speed multi-threaded
+                            scanning.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="relative z-10 text-center flex flex-col items-center">
+                        <div
+                            class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center border border-primary-fixed-dim/20 mb-6 glow-soft group hover:border-primary-fixed-dim transition-colors">
+                            <span class="material-symbols-outlined text-3xl text-primary-fixed-dim"
+                                data-icon="radar">radar</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">3. Detect</h4>
+                        <p class="text-on-surface-variant text-xs">Intelligent identification of security flaws.</p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="relative z-10 text-center flex flex-col items-center">
+                        <div
+                            class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center border border-primary-fixed-dim/20 mb-6 glow-soft group hover:border-primary-fixed-dim transition-colors">
+                            <span class="material-symbols-outlined text-3xl text-primary-fixed-dim"
+                                data-icon="article">article</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-2">4. Report</h4>
+                        <p class="text-on-surface-variant text-xs">Actionable mitigation steps and raw data output.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Tech Stack -->
+        <section class="py-24 px-6 bg-surface overflow-hidden" id="stack">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+                <div class="md:w-1/2">
+                    <span class="text-primary-fixed-dim font-['Roboto_Mono'] text-sm tracking-widest uppercase">THE
+                        ENGINE</span>
+                    <h2 class="text-4xl font-headline font-bold text-white mt-4 mb-8">Engineered for Performance and
+                        Extensibility</h2>
+                    <div class="space-y-4">
+                        <div
+                            class="flex items-center gap-4 bg-surface-container p-4 border-l-4 border-primary-fixed-dim">
+                            <span class="text-white font-bold font-['Roboto_Mono']">Python 3.11</span>
+                            <p class="text-on-surface-variant text-sm">Core logic built for speed and ease of
+                                contribution.</p>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 bg-surface-container p-4 border-l-4 border-primary-fixed-dim/50">
+                            <span class="text-white font-bold font-['Roboto_Mono']">Flask</span>
+                            <p class="text-on-surface-variant text-sm">Lightweight web interface for local management.
+                            </p>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 bg-surface-container p-4 border-l-4 border-primary-fixed-dim/20">
+                            <span class="text-white font-bold font-['Roboto_Mono']">REST APIs</span>
+                            <p class="text-on-surface-variant text-sm">Seamless integration with CI/CD and external
+                                tools.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 relative">
+                    <div
+                        class="aspect-square bg-gradient-to-tr from-primary-fixed-dim/20 to-transparent rounded-full flex items-center justify-center relative">
+                        <img class="w-[80%] h-[80%] object-cover rounded-sm border border-outline-variant/30 brightness-75 grayscale contrast-125"
+                            data-alt="Close-up of a high-tech computer motherboard with glowing green data streams and intricate circuitry patterns in dark atmosphere"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNpzL6L8T70s3Ab3jqVEZB_S_XBn-UANZEckm0plxa53uqCHmZNG0nivfULndHk3fb69HZyUBy2LiPiLF-zbKb7LK2a3INIdf2cS-bGxs-jdbOXlvjSU3chF-xheH3YNz8NmkXw3nMv090JhHyeARyFlIF-okQNaN483tfvYMbd6fJ0oFbXg6LNQDyoygj13zDBty7HbtTp_Rx0pav9r3_pMoG72qQi061dP7TjDaPF36Gukkds_fYk8pLXmo6ZFUa7Bk4K9VD8Vc" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form -->
+        <section class="py-24 px-6 bg-surface-container-lowest" id="contact">
+            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
+                <div>
+                    <h2 class="text-3xl font-headline font-bold text-white mb-6">Get in Touch</h2>
+                    <p class="text-on-surface-variant mb-12">Have questions or want to partner? Our security experts are
+                        here to help.</p>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <span class="material-symbols-outlined text-primary-fixed-dim" data-icon="mail">mail</span>
+                            <span class="text-on-surface-variant">contact@hackbuddy.io</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="material-symbols-outlined text-primary-fixed-dim" data-icon="link">link</span>
+                            <span class="text-on-surface-variant">linkedin.com/company/hackbuddy</span>
+                        </div>
+                    </div>
+                </div>
+                <form action="/api/contact" method="POST" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input name="first_name"
+                            class="bg-transparent border-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary-fixed-dim text-white p-3 placeholder:text-on-surface-variant/50"
+                            placeholder="First Name" type="text" required />
+                        <input name="last_name"
+                            class="bg-transparent border-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary-fixed-dim text-white p-3 placeholder:text-on-surface-variant/50"
+                            placeholder="Last Name" type="text" required />
+                    </div>
+                    <input name="email"
+                        class="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary-fixed-dim text-white p-3 placeholder:text-on-surface-variant/50"
+                        placeholder="Email Address" type="email" required />
+                    <textarea name="message"
+                        class="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary-fixed-dim text-white p-3 placeholder:text-on-surface-variant/50"
+                        placeholder="Your Message" rows="4" required></textarea>
+                    <button class="w-full tech-gradient text-on-primary-fixed py-4 font-bold rounded-sm"
+                        type="submit">Send Secure Transmission</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <!-- Footer Shell -->
+    <footer class="w-full py-12 px-6 bg-[#040f1e] border-t border-[#3c4a45]/15">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#64ffda]" data-icon="security">security</span>
+                <span class="text-lg font-['Space_Grotesk'] text-white">HackBuddy</span>
+            </div>
+            <div class="flex flex-wrap justify-center gap-8">
+                <a class="font-['Inter'] text-sm text-[#bacac3] hover:text-white transition-colors opacity-80 hover:opacity-100"
+                    href="#">Documentation</a>
+                <a class="font-['Inter'] text-sm text-[#bacac3] hover:text-white transition-colors opacity-80 hover:opacity-100"
+                    href="#">GitHub</a>
+                <a class="font-['Inter'] text-sm text-[#bacac3] hover:text-white transition-colors opacity-80 hover:opacity-100"
+                    href="#">Privacy Policy</a>
+                <a class="font-['Inter'] text-sm text-[#bacac3] hover:text-white transition-colors opacity-80 hover:opacity-100"
+                    href="#">LinkedIn</a>
+            </div>
+            <p class="font-['Inter'] text-sm text-[#bacac3]">© 2024 HackBuddy. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        // Form action handles the transition to the scanner dashboard.
+    </script>
+</body>
+
+</html>
